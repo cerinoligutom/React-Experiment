@@ -1,22 +1,48 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import classes from './App.css';
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
 
-class App extends Component {
-  state = {
-    persons: [
-      { id: '11', name: 'Max', age: 28 },
-      { id: '22', name: 'Manu', age: 29 },
-      { id: '33', name: 'Stephanie', age: 26 }
-    ],
-    otherState: 'some other value',
-    showPersons: false
+class App extends PureComponent {
+  constructor(props) {
+    super(props);
+    console.log('[App.js] Inside Constructor', props);
+    this.state = {
+      persons: [
+        { id: '11', name: 'Max', age: 28 },
+        { id: '22', name: 'Manu', age: 29 },
+        { id: '33', name: 'Stephanie', age: 26 }
+      ],
+      otherState: 'some other value',
+      showPersons: false
+    }
   }
 
+  componentWillMount() {
+    console.log('[App.js] Inside componentWillMount()');
+  }
+
+  componentDidMount() {
+    console.log('[App.js] Inside componentDidMount()');
+  }
+
+  // START - Component Lifecycle - Update (Triggered by internal change)
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log('[UPDATE App.js] Inside shouldComponentUpdate', nextProps, nextState);
+  //   return nextState.persons !== this.state.persons ||
+  //     nextState.showPersons !== this.state.showPersons;
+  // }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log('[UPDATE App.js] Inside componentWillUpdate', nextProps, nextState);
+  }
+
+  componentDidUpdate() {
+    console.log('[UPDATE App.js] Inside componentDidUpdate')
+  }
+  // END - Component Lifecycle - Update (Triggered by internal change)
+
   switchNameHandler = (newName) => {
-    // console.log('Was clicked!');
-    // DON'T DO THIS: this.state.persons[0].name = 'Maximilian';
     this.setState({
       persons: [
         { name: newName, age: 28 },
@@ -33,8 +59,6 @@ class App extends Component {
 
     const person = { ...this.state.persons[personIndex] };
 
-    // const person = Object.assign({}, this.state.persons[personIndex]);
-
     person.name = event.target.value;
 
     const persons = [...this.state.persons];
@@ -44,7 +68,6 @@ class App extends Component {
   }
 
   deletePersonHandler = (personIndex) => {
-    // const persons = this.state.persons.slice();
     const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
     this.setState({ persons: persons });
@@ -56,23 +79,24 @@ class App extends Component {
   }
 
   render() {
+    console.log('[App.js] Inside render()');
     let persons = null;
-    
 
     if (this.state.showPersons) {
       persons = <Persons
-            persons={this.state.persons}
-            clicked={this.deletePersonHandler}
-            changed={this.nameChangedHandler} />;
+        persons={this.state.persons}
+        clicked={this.deletePersonHandler}
+        changed={this.nameChangedHandler} />;
     }
 
     return (
       <div className={classes.App}>
-        <Cockpit 
+        <button onClick={() => {this.setState({showPersons: true })}}>Show Persons</button>
+        <Cockpit
           appTitle={this.props.title}
           showPersons={this.state.showPersons}
           persons={this.state.persons}
-          clicked={this.togglePersonsHandler}/>
+          clicked={this.togglePersonsHandler} />
         {persons}
       </div>
     );
